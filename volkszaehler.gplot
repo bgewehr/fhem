@@ -1,0 +1,31 @@
+# 
+# Display Volkszaehler.org Values 
+# FileLog definition: 
+
+# Logfile record example: 
+# 2012-03-18_10:43:11 Stromverbrauch V: 530.1
+
+set terminal png transparent size <SIZE> crop 
+
+set output '<OUT>.png' 
+set xdata time 
+set timefmt "%Y-%m-%d_%H:%M:%S" 
+set xlabel " " 
+set ytics nomirror 
+#set ytics 
+set title '<L1>' 
+set grid xtics y2tics 
+set multiplot 
+set ylabel "Watt"
+
+#FileLog 4:average\x3a::
+##FileLog 4:min\x3a::
+##FileLog 4:max\x3a::
+##FileLog 4:consumption\x3a::
+##FileLog 4:last\x3a::
+
+plot      "<IN>" using 1:4 ls l0fill axes x1y1 title 'average' with lines lw 1
+#plot      "<IN>" using 1:4 ls l0fill axes x1y1 title 'min' with lines lw 1
+#plot      "<IN>" using 1:4 ls l0fill axes x1y1 title 'max' with lines lw 1
+#plot      "<IN>" using 1:4 ls l0fill axes x1y1 title 'consumption' with lines lw 1
+#plot      "<IN>" using 1:4 ls l0fill axes x1y1 title 'last' with lines lw 1
