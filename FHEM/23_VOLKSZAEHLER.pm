@@ -92,7 +92,7 @@ VOLKSZAEHLER_GetStatus($)
   if(!defined($hash->{Host_Port})) { return(""); }
   
   my $host_port = $hash->{Host_Port}||"";
-  my $URL="http://".$host.":".$host_port."/middleware.php/data/".$channel.".json?from=".$delay."%20seconds%20ago&tuples=4";
+  my $URL="http://".$host.":".$host_port."/middleware.php/data/".$channel.".json?from=".$delay."%20seconds%20ago&tuples=1";
   my $agent = LWP::UserAgent->new(env_proxy => 1,keep_alive => 1, timeout => 25)||"";
   my $header = HTTP::Request->new(GET => $URL)||"";
   my $request = HTTP::Request->new('GET', $URL, $header)||"";
@@ -124,8 +124,8 @@ VOLKSZAEHLER_GetStatus($)
   $from = localtime($from/1000);
   my $to = $decoded->{data}->{to}||0;
   $to = localtime($to/1000);
-  my $last = $decoded->{data}->{tuples}[3][1]||"";
-  my $last_at = $decoded->{data}->{tuples}[3][0]||0;
+  my $last = $decoded->{data}->{tuples}[0][1]||"";
+  my $last_at = $decoded->{data}->{tuples}[0][0]||0;
   $last_at = localtime($last_at/1000);
   my $state=$last||"";
   
