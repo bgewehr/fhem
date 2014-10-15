@@ -28,7 +28,7 @@ package main;
 
 use strict;
 use warnings;
-use JSON;
+use JSON::PP;
 use Time::Piece;
 use Data::Dumper;
 use LWP::UserAgent;
@@ -107,7 +107,7 @@ VOLKSZAEHLER_GetStatus($)
         return("");
   }
 
-  my $decoded = from_json( $response->content );
+  my $decoded = decode_json( $response->content );
   
   #used for debugging
   #print $response->content."\n";
