@@ -107,7 +107,7 @@ VOLKSZAEHLER_GetStatus($)
         return("");
   }
 
-  my $decoded = jsonToObj( $response->content );
+  my $decoded = JSON->decode( $response->content );
   
   #used for debugging
   #print $response->content."\n";
