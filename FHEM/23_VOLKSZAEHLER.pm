@@ -28,7 +28,7 @@ package main;
 
 use strict;
 use warnings;
-use JSON::PP;
+use JSON;
 use Time::Piece;
 use Data::Dumper;
 use LWP::UserAgent;
