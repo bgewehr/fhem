@@ -23,7 +23,12 @@
 #  
 #  Changes:
 #  14.02.15 optimizer     enable to query local vzlogger http daemon or middleware daemon
-#
+#                       Prerequisites in vzlogger.conf : 
+#                       "local" : {
+#                          "enabled" : true,
+#                          "port" : 8080,
+#                          "timeout" : 30,
+#                          "buffer" : -1<-----
 #
 ################################################################
 # $Id:$
