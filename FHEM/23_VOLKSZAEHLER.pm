@@ -149,20 +149,19 @@ VOLKSZAEHLER_GetStatus($)
   if($err_log ne "")
   {
         Log GetLogLevel($name,2), "VOLKSZAEHLER ".$err_log;
+        readingsSingleUpdate( $hash, "state", "Reading Error",1 );
         return("");
   }
 
   my $decoded = decode_json( $response->content );
   
-  #used for debugging
-  print "debug Info VOLKSZAEHLER content";
-  print $response->content."\n";
+  Log3 $name, 5, "Debug VOLKSZAEHLER " .$response->content."\n";
   
   my ($average, $min, $max, $consumption, $state, $min_at, $max_at, $from, $to, $last, $last_at);
   
   if ($type eq "local") {
       #{ "version": "0.4.0", "generator": "vzlogger", "data": [ { "uuid": "180", "last": 1423958150541, "interval": 30, "protocol": "d0", "tuples": [ [ 1423958150541, 15094.700000 ] ] } ] }
-      print Dumper($decoded); #only with: use Data::Dumper;
+      #print Dumper($decoded); #only with: use Data::Dumper;
       #$last = %$decoded->{data}->{tuples}[0][1];
       # "Not a HASH reference" führt zu FHEM Absturz 
       $last = $decoded->{data}->[0]->{tuples}[0][1]||0;
