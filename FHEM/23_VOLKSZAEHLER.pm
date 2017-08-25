@@ -45,6 +45,7 @@ VOLKSZAEHLER_Initialize($)
     $readingFnAttributes;
 }
 
+sub
 VOLKSZAEHLER_Define($$)
 {
   my ($hash, $def) = @_;
@@ -57,7 +58,7 @@ VOLKSZAEHLER_Define($$)
   my $reading = uc($a[5])||"";
   my $delay = $a[6]||"";
   my $period = $a[7]||$delay;
-
+  
   $attr{$name}{delay}=$delay if $delay;
   $attr{$name}{period}=$period if $period;
   $attr{$name}{'event-on-change-reading'} = uc($reading);
@@ -66,12 +67,12 @@ VOLKSZAEHLER_Define($$)
   return "Wrong syntax: use define <name> VOLKSZAEHLER <ip-address> <port-nr> <channel> <Wert:last/min/max/average/consumption> <poll-delay> optional: <period>" if(int(@a) < 7);
 
   $hash->{Host} = $host;
-  $hash->{Host_Port} = $host_port;
+  $hash->{Host_Port} = $host_port; 
   $hash->{Channel} = $channel;
   $hash->{Reading} = $reading;
-
+ 
   InternalTimer(gettimeofday(), "VOLKSZAEHLER_GetStatus", $hash, 0);
-
+ 
   return undef;
 }
 
@@ -87,15 +88,15 @@ VOLKSZAEHLER_GetStatus($)
   my $host = $hash->{Host}||"";
   my $channel = $hash->{Channel}||"";
   my $reading = $hash->{Reading}||"";
-
+  
   my $delay=$attr{$name}{delay}||300;
   my $period=$attr{$name}{period}||$delay;
-
+  
   #Log 0, $name.' Delay: '.$delay.' Period: '.$period;
   InternalTimer(gettimeofday()+$delay, "VOLKSZAEHLER_GetStatus", $hash, 0);
 
   if(!defined($hash->{Host_Port})) { return(""); }
-
+  
   my $host_port = $hash->{Host_Port}||"";
   my $URL="http://".$host.":".$host_port."/middleware.php/data/".$channel.".json?from=".$period."%20seconds%20ago&tuples=1";
   my $agent = LWP::UserAgent->new(env_proxy => 1,keep_alive => 1, timeout => 25)||"";
@@ -113,24 +114,24 @@ VOLKSZAEHLER_GetStatus($)
   }
 
   my $decoded = decode_json( $response->content );
-
+  
   #used for debugging
   #print $response->content."\n";
   #print Dumper($decoded);
-
+ 
   # my $count = $decoded->{data}->{rows}||0;
   # print $count, "\n";
 
   # $count = $count - 2;
   # print $count, "\n";
-
+  
   if ($decoded->{data}) {
 
-  my $min = $decoded->{data}->{min}[1]||0;
+  my $min = $decoded->{data}->{min}[1]||0;  
   my $min_at = $decoded->{data}->{min}[0]||0;
   $min_at = localtime($min_at/1000);
-  my $max = $decoded->{data}->{max}[1]||0;
-  my $max_at = $decoded->{data}->{max}[0]||0;
+  my $max = $decoded->{data}->{max}[1]||0;  
+  my $max_at = $decoded->{data}->{max}[0]||0;  
   $max_at = localtime($max_at/1000);
   my $average = $decoded->{data}->{average}||0;
   my $consumption = $decoded->{data}->{consumption}||0;
@@ -161,7 +162,8 @@ VOLKSZAEHLER_GetStatus($)
   if ($reading eq "max"){$state = $max; last SELECT; }
   if ($reading eq "consumption"){$state = $consumption; last SELECT; }
   }
-
+  
+  
   Log 4, "VOLKSZAEHLER_GetStatus: $name $host_port ".$hash->{STATE}." -> ".$state;
 
   my $i;
@@ -170,17 +172,17 @@ VOLKSZAEHLER_GetStatus($)
   readingsBeginUpdate($hash);
   $ts = localtime()->strftime('%Y-%m-%d %H:%M:%S');
   $hash->{".updateTimestamp"} = $ts;
-
+  
   readingsBulkUpdate($hash, "CONSUMPTION", $consumption );
-
+  
   $i = $#{ $hash->{CHANGED} };
   $ts = $min_at->strftime('%Y-%m-%d %H:%M:%S');
   $hash->{".updateTimestamp"} = $ts;
   readingsBulkUpdate($hash, "MIN", $min );
   $hash->{CHANGETIME}->[$#{ $hash->{CHANGED} }] = $ts if ($#{ $hash->{CHANGED} } != $i ); # only add ts if there is a event to
-
+  
   readingsBulkUpdate($hash, "MIN_AT", $min_at->strftime('%Y-%m-%d %H:%M:%S'));
-
+   
   $i = $#{ $hash->{CHANGED} };
   $ts = $max_at->strftime('%Y-%m-%d %H:%M:%S');
   $hash->{".updateTimestamp"} = $ts;
